@@ -70,6 +70,7 @@ function detectApi(company) {
   }
 
   return null;
+  // Note: Workday companies (workday_api field) are handled by scan-playwright.mjs
 }
 
 // ── API parsers ─────────────────────────────────────────────────────

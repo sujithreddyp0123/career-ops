@@ -33,24 +33,23 @@
 
 ## Diseño del PDF
 
-- **Fonts**: Space Grotesk (headings, 600-700) + DM Sans (body, 400-500)
-- **Fonts self-hosted**: `fonts/`
-- **Header**: nombre en Space Grotesk 24px bold + línea gradiente `linear-gradient(to right, hsl(187,74%,32%), hsl(270,70%,45%))` 2px + fila de contacto
-- **Section headers**: Space Grotesk 13px, uppercase, letter-spacing 0.05em, color cyan primary
-- **Body**: DM Sans 11px, line-height 1.5
-- **Company names**: color accent purple `hsl(270,70%,45%)`
-- **Márgenes**: 0.6in
+- **Font**: Calibri (system font, Windows), fallback Trebuchet MS / Arial / sans-serif
+- **Header**: nombre en Calibri 20px bold (no uppercase) + contact row 10px con separadores | (pipe)
+- **Section headers**: Calibri 11.5px, bold, uppercase, letter-spacing 0.04em, black `border-bottom: 1.5px solid #000`
+- **Body**: Calibri 10.5px, line-height 1.55, color #000
+- **Colors**: pure black/white — no color accents anywhere
+- **Márgenes**: 0.6in (handled by generate-pdf.mjs)
 - **Background**: blanco puro
 
 ## Orden de secciones (optimizado "6-second recruiter scan")
 
-1. Header (nombre grande, gradiente, contacto, link portfolio)
+1. Header (nombre, contacto: Phone | Email | LinkedIn | GitHub | Location)
 2. Professional Summary (3-4 líneas, keyword-dense)
-3. Core Competencies (6-8 keyword phrases en flex-grid)
-4. Work Experience (cronológico inverso)
+3. Technical Skills (bullet list con bold category labels)
+4. Professional Experience (cronológico inverso)
 5. Projects (top 3-4 más relevantes)
-6. Education & Certifications
-7. Skills (idiomas + técnicos)
+6. Education
+7. Certifications
 
 ## Estrategia de keyword injection (ético, basado en verdad)
 
@@ -69,28 +68,55 @@ Usar el template en `cv-template.html`. Reemplazar los placeholders `{{...}}` co
 |-------------|-----------|
 | `{{LANG}}` | `en` o `es` |
 | `{{PAGE_WIDTH}}` | `8.5in` (letter) o `210mm` (A4) |
-| `{{NAME}}` | (from profile.yml) |
-| `{{PHONE}}` | (from profile.yml — include with its separator only when `profile.yml` has a non-empty `phone` value; omit both `<span>` and `<span class="separator">` otherwise) |
-| `{{EMAIL}}` | (from profile.yml) |
-| `{{LINKEDIN_URL}}` | [from profile.yml] |
-| `{{LINKEDIN_DISPLAY}}` | [from profile.yml] |
-| `{{PORTFOLIO_URL}}` | [from profile.yml] (o /es según idioma) |
-| `{{PORTFOLIO_DISPLAY}}` | [from profile.yml] (o /es según idioma) |
-| `{{LOCATION}}` | [from profile.yml] |
-| `{{SECTION_SUMMARY}}` | Professional Summary / Resumen Profesional |
-| `{{SUMMARY_TEXT}}` | Summary personalizado con keywords |
-| `{{SECTION_COMPETENCIES}}` | Core Competencies / Competencias Core |
-| `{{COMPETENCIES}}` | `<span class="competency-tag">keyword</span>` × 6-8 |
-| `{{SECTION_EXPERIENCE}}` | Work Experience / Experiencia Laboral |
-| `{{EXPERIENCE}}` | HTML de cada trabajo con bullets reordenados |
-| `{{SECTION_PROJECTS}}` | Projects / Proyectos |
-| `{{PROJECTS}}` | HTML de top 3-4 proyectos |
-| `{{SECTION_EDUCATION}}` | Education / Formación |
-| `{{EDUCATION}}` | HTML de educación |
-| `{{SECTION_CERTIFICATIONS}}` | Certifications / Certificaciones |
-| `{{CERTIFICATIONS}}` | HTML de certificaciones |
-| `{{SECTION_SKILLS}}` | Skills / Competencias |
-| `{{SKILLS}}` | HTML de skills |
+| `{{NAME}}` | Full name from profile.yml (e.g. `Sujith Kumar Reddy`) |
+| `{{PHONE}}` | Phone from profile.yml. If empty, omit the phone and its `\|` separator entirely. |
+| `{{EMAIL}}` | Email from profile.yml |
+| `{{LINKEDIN_URL}}` | Full URL (e.g. `https://linkedin.com/in/sujithponnaluru`) |
+| `{{LINKEDIN_DISPLAY}}` | Display text (e.g. `linkedin.com/in/sujithponnaluru`) |
+| `{{GITHUB_URL}}` | Full URL from profile.yml `github` field (e.g. `https://github.com/sujithreddyp0123`) |
+| `{{GITHUB_DISPLAY}}` | Display text (e.g. `github.com/sujithreddyp0123`) |
+| `{{LOCATION}}` | Location from profile.yml (e.g. `United States`) |
+| `{{SECTION_SUMMARY}}` | `Professional Summary` |
+| `{{SUMMARY_TEXT}}` | Summary paragraph — keyword-dense, 3-4 sentences |
+| `{{SECTION_SKILLS}}` | `Technical Skills` |
+| `{{SKILLS}}` | `<ul class="skills-list"><li><strong>Category:</strong> item, item, item</li>...</ul>` — one `<li>` per category with bold label |
+| `{{SECTION_EXPERIENCE}}` | `Professional Experience` |
+| `{{EXPERIENCE}}` | One `.job` div per role — see HTML structure below |
+| `{{SECTION_PROJECTS}}` | `Projects` |
+| `{{PROJECTS}}` | One `.project` div per project — see HTML structure below |
+| `{{SECTION_EDUCATION}}` | `Education` |
+| `{{EDUCATION}}` | `<ul class="edu-list"><li><strong>Degree</strong> — Institution (dates)</li>...</ul>` |
+| `{{SECTION_CERTIFICATIONS}}` | `Certifications` |
+| `{{CERTIFICATIONS}}` | `<ul class="cert-list"><li>Cert name (dates)</li>...</ul>` |
+
+### HTML structure for `{{EXPERIENCE}}`
+
+```html
+<div class="job">
+  <div class="job-top-row">
+    <span class="job-company">Company Name</span>
+    <span class="job-location">City, Country</span>
+  </div>
+  <div class="job-role-row">
+    <span class="job-role">Job Title</span>
+    <span class="job-date">Month YYYY – Month YYYY</span>
+  </div>
+  <ul>
+    <li>Bullet with metric...</li>
+  </ul>
+</div>
+```
+
+### HTML structure for `{{PROJECTS}}`
+
+```html
+<div class="project">
+  <div class="project-title">Project Name — Description | <a href="https://...">live-url.com</a> | <a href="https://github.com/...">github.com/user</a></div>
+  <ul>
+    <li>Bullet...</li>
+  </ul>
+</div>
+```
 
 ## Canva CV Generation (optional)
 
